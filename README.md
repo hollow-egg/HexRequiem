@@ -17,6 +17,7 @@ Currently implemented:
 
 Future Plans:
 - 
+- Make Rend Mind and Conjoin Spirit Great Spells
 - Make it impossible to cast Rend Mind on a creature wearing a helmet. Yep, that's it. I'm hoping to make it fairly simple to avoid having this spell cast on you.
 - Fix an issue where a new Hex Notebook is spawned when a player leaves their body
 - Make Conjoin Spirit accept any soul iota. This should allow for the "swapping" of mob ai
