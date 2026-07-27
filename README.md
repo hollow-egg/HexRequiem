@@ -1,3 +1,5 @@
+Ever wanted to turn your friend into a frog? Well now you can! With the power of hexcasting you can now tear out both their souls and slap your friend's mind into the frog's empty body. And there's so much more...
+
 Currently implemented:
 -
 - Soul Iota: contains the "true" identity of the entity (Default entity iota is now treated as if it references the "Body")
