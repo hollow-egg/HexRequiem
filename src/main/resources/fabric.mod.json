@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "hexrequiem",
+  "version": "${version}",
+  "name": "HexRequiem",
+  "description": "An addon for Hex Casting and Reqiuem that adds spells to manipulate possession.",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/hexrequiem/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "dev.egg.hexrequiem.client.HexRequiemDataGenerator"
+    ],
+    "client": [
+      "dev.egg.hexrequiem.client.HexRequiemClient"
+    ],
+    "main": [
+      "dev.egg.hexrequiem.HexRequiem"
+    ]
+  },
+  "mixins": [
+    "hexrequiem.mixins.json",
+    {
+      "config": "hexrequiem.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
