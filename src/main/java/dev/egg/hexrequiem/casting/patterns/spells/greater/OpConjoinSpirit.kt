@@ -13,6 +13,7 @@ import dev.egg.hexrequiem.utils.ReqiuemHelper
 import ladysnake.requiem.api.v1.possession.PossessionComponent
 import ladysnake.requiem.api.v1.remnant.RemnantComponent
 import ladysnake.requiem.common.entity.PlayerShellEntity
+import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.mob.MobEntity
 import net.minecraft.server.network.ServerPlayerEntity
@@ -23,13 +24,19 @@ object OpConjoinSpirit : SpellAction
     override val argc = 2
     val cost = MediaConstants.SHARD_UNIT
 
+    private fun canPossess(entity: Entity): Boolean {
+        if (entity !is LivingEntity // if body is not a valid target
+            || ReqiuemHelper.getSoul(entity) != null) // if body already has a soul
+            return false
+        return true
+    }
+
     override fun execute(args: List<Iota>, env: CastingEnvironment): SpellAction.Result {
         val soulArg = args[0] as? SoulIota?: return SpellAction.Result(Spell(null, null), 0L, emptyList())
         val entityArg = args[1] as? EntityIota?: return SpellAction.Result(Spell(null, null), 0L, emptyList())
 
-        if (soulArg.entity !is ServerPlayerEntity // only supporting transferring player souls atm, planning on transferring mob souls later
-                || entityArg.entity !is LivingEntity // if body is not a valid target
-                || ReqiuemHelper.getSoul(entityArg.entity) != null) // if body already has a soul
+        // only supporting transferring player souls atm, planning on transferring mob souls later
+        if (soulArg.entity !is ServerPlayerEntity || !canPossess(entityArg.entity))
             return SpellAction.Result(Spell(
                 null,
                 null,

@@ -8,23 +8,33 @@ import at.petrak.hexcasting.api.casting.iota.EntityIota
 import at.petrak.hexcasting.api.casting.iota.Iota
 import at.petrak.hexcasting.api.misc.MediaConstants
 import dev.egg.hexrequiem.utils.ReqiuemHelper
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EquipmentSlot
 import net.minecraft.entity.LivingEntity
+import net.minecraft.registry.tag.ItemTags
 
 object OpRendMind : SpellAction
 {
     override val argc = 1
     val cost = MediaConstants.SHARD_UNIT
 
+    private fun canRemoveSoul(entity: Entity): Boolean {
+        if (entity !is LivingEntity
+            || entity.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.TRIMMABLE_ARMOR))
+            return false
+        return true
+    }
+
     override fun execute(args: List<Iota>, env: CastingEnvironment): SpellAction.Result {
         val targetArg = args[0] as? EntityIota?: return SpellAction.Result(Spell(null), 0L, emptyList())
 
         val entity = ReqiuemHelper.getSoul(targetArg.entity)
 
-        if (entity !is LivingEntity)
+        if (!canRemoveSoul(entity))
             return SpellAction.Result(Spell(null), 0L, emptyList())
 
         return SpellAction.Result(
-            Spell(entity),
+            Spell(entity as LivingEntity),
             cost,
             listOf(ParticleSpray.burst(entity.pos, 1.0))
         )
