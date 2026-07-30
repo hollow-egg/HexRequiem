@@ -7,6 +7,7 @@ Currently implemented:
 -
 - Soul Iota: contains the "true" identity of the entity (Default entity iota is now treated as if it references the "Body")
 - Rend Mind Spell: takes an entity iota as input and attempts to remove its soul. This removes mob ai and stops player possession
+  - If you attempt to cast Rend Mind on an entity wearing a helmet (specifically armor in the head slot), the spell will fail. This is basically just an easy way for players to avoid being ripped from their bodies if they don't want to.
 <img width="234" height="235" alt="image" src="https://github.com/user-attachments/assets/24881bd9-5adb-4afe-94c1-678beb2c74f4" />
 
 - Conjoin Spirit Spell: takes a soul iota and entity iota as input and attempts to place the soul inside of the body. This will not remove souls from bodies or overwrite existing ones, you need Rend Mind for that
@@ -23,7 +24,6 @@ Currently implemented:
 Future Plans:
 - 
 - Make Rend Mind and Conjoin Spirit Great Spells
-- Make it impossible to cast Rend Mind on a creature wearing a helmet. Yep, that's it. I'm hoping to make it fairly simple to avoid having this spell cast on you.
 - Fix an issue where a new Hex Notebook is spawned when a player leaves their body
 - Make Conjoin Spirit accept any soul iota. This should allow for the "swapping" of mob ai
 - Allow for Rend Mind to "write" a soul to a soul vessel. Entities don't become wanderers, so it be a good option for moving/storing removed souls (maybe a different spell? similar to the trinket/artifact spells)
