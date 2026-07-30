@@ -19,23 +19,22 @@ object OpRendMind : SpellAction
     val cost = MediaConstants.SHARD_UNIT
 
     private fun canRemoveSoul(entity: Entity): Boolean {
-        if (entity !is LivingEntity
-            || entity.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.TRIMMABLE_ARMOR))
-            return false
-        return true
+        return entity is LivingEntity && !entity.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.TRIMMABLE_ARMOR)
     }
 
     override fun execute(args: List<Iota>, env: CastingEnvironment): SpellAction.Result {
         val targetArg = args[0] as? EntityIota?: return SpellAction.Result(Spell(null), 0L, emptyList())
 
-        val entity = ReqiuemHelper.getSoul(targetArg.entity)
+        val entity = targetArg.entity
+
+        env.assertEntityInRange(entity)
 
         if (!canRemoveSoul(entity))
             return SpellAction.Result(Spell(null), 0L, emptyList())
 
         return SpellAction.Result(
             Spell(entity as LivingEntity),
-            cost,
+            cost * entity.health.toLong(), // scales with the entity's health, for some semblance of balance
             listOf(ParticleSpray.burst(entity.pos, 1.0))
         )
     }

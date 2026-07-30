@@ -4,7 +4,8 @@
   "package": "dev.egg.hexrequiem.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "EntityIotaMixin"
+    "EntityIotaMixin",
+    "OpBrainsweepMixin"
   ],
   "injectors": {
     "defaultRequire": 1

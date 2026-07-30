@@ -4,10 +4,16 @@ import baritone.api.fakeplayer.FakeServerPlayerEntity;
 import ladysnake.requiem.api.v1.internal.ProtoPossessable;
 import ladysnake.requiem.api.v1.possession.PossessionComponent;
 import ladysnake.requiem.api.v1.remnant.RemnantComponent;
+import ladysnake.requiem.common.entity.ReleasedSoulEntity;
+import ladysnake.requiem.common.entity.RequiemEntities;
+import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
+import net.fabricmc.fabric.api.tag.convention.v1.ConventionalEntityTypeTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Vec3d;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
 import static ladysnake.requiem.api.v1.possession.PossessionComponent.getHost;
@@ -35,22 +41,36 @@ public class ReqiuemHelper {
         return host != null ? host : entity;
     }
 
-    public static void removeSoul(LivingEntity e){
-        if (e instanceof ServerPlayerEntity player){
-            PossessionComponent possessionComponent = PossessionComponent.get(player);
+    public static void removeSoul(LivingEntity body){
+
+        var possessor = ((ProtoPossessable) body).getPossessor();
+
+        if (possessor != null){
+            PossessionComponent possessionComponent = PossessionComponent.get(possessor);
             if (possessionComponent.isPossessionOngoing()) {
                 possessionComponent.stopPossessing(false);
                 LOGGER.info("Stopping Possession");
             }
-            else{
-                RemnantComponent remnantComponent = RemnantComponent.get(player);
-                remnantComponent.splitPlayer(true);
-                LOGGER.info("Splitting Player");
-            }
         }
-        else if (!SoulHolderComponent.isSoulless(e)){
-            SoulHolderComponent.get(e).removeSoul();
+        else if (body instanceof ServerPlayerEntity) {
+            RemnantComponent remnantComponent = RemnantComponent.get((PlayerEntity) body);
+            remnantComponent.splitPlayer(true);
+            LOGGER.info("Splitting Player");
+        }
+        else if (!SoulHolderComponent.isSoulless(body) && !body.getType().isIn(RequiemEntityTypeTags.SOUL_CAPTURE_BLACKLIST)){
+            SoulHolderComponent.get(body).removeSoul();
+            spawnReleasedSoul(body);
+
             LOGGER.info("Removed Soul");
         }
+    }
+
+    public static void spawnReleasedSoul(LivingEntity entity){
+        ReleasedSoulEntity releasedSoul = new ReleasedSoulEntity(RequiemEntities.RELEASED_SOUL, entity.getWorld(), entity.getUuid());
+        releasedSoul.setPosition(entity.getX(), entity.getBodyY(0.8D), entity.getZ());
+        releasedSoul.setVelocity(new Vec3d(0, 0.15, 0));
+        releasedSoul.setYaw(entity.getYaw());
+        releasedSoul.setPitch(entity.getPitch());
+        entity.getWorld().spawnEntity(releasedSoul);
     }
 }

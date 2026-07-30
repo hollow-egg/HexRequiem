@@ -5,12 +5,10 @@ import at.petrak.hexcasting.api.casting.iota.IotaType;
 import at.petrak.hexcasting.api.utils.HexUtils;
 import dev.egg.hexrequiem.registry.HexRequiemIotaTypes;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -80,7 +78,7 @@ public class SoulIota extends Iota {
                 return Text.translatable("hexcasting.spelldata.entity.whoknows");
             }
             var name = ctag.getString("name");
-            return Text.literal(name + "'s Soul").getWithStyle(Style.EMPTY.withColor(Formatting.DARK_BLUE)).get(0);
+            return Text.literal(name + "'s Soul").getWithStyle(Style.EMPTY.withColor(Formatting.BLUE)).get(0);
         }
 
         @Override

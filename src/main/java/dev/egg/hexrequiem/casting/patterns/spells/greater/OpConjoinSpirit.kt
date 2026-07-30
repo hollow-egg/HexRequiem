@@ -35,6 +35,8 @@ object OpConjoinSpirit : SpellAction
         val soulArg = args[0] as? SoulIota?: return SpellAction.Result(Spell(null, null), 0L, emptyList())
         val entityArg = args[1] as? EntityIota?: return SpellAction.Result(Spell(null, null), 0L, emptyList())
 
+        env.assertEntityInRange(entityArg.entity)
+
         // only supporting transferring player souls atm, planning on transferring mob souls later
         if (soulArg.entity !is ServerPlayerEntity || !canPossess(entityArg.entity))
             return SpellAction.Result(Spell(
