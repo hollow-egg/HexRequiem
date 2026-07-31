@@ -9,7 +9,7 @@ Currently implemented:
   - The soul iota of a player has a gradient that matches their current pigment!
     <img width="456.5" height="267" alt="image" src="https://github.com/user-attachments/assets/49d8b54d-627d-416e-aac6-4969e3b0ee0f" />
 
-- Rend Mind Spell: takes an entity iota as input and attempts to remove its soul. This removes mob ai and stops player possession
+- Rend Mind Spell: takes an entity iota as input and attempts to remove its soul. This removes mob ai, stops any player possession, and releases a wandering spirit
   - If you attempt to cast Rend Mind on an entity wearing a helmet (specifically armor in the head slot), the spell will fail. This is basically just an easy way for players to avoid being ripped from their bodies if they don't want to.
 <img width="234" height="235" alt="image" src="https://github.com/user-attachments/assets/24881bd9-5adb-4afe-94c1-678beb2c74f4" />
 
