@@ -42,7 +42,7 @@ object OpRendMind : SpellAction
     private data class Spell(val entity: LivingEntity?) : RenderedSpell {
         override fun cast(env: CastingEnvironment) {
             entity ?: return
-            ReqiuemHelper.removeSoul(entity)
+            ReqiuemHelper.removeSoul(entity, true)
         }
     }
 }

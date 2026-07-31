@@ -15,13 +15,7 @@ public class HexRequiem implements ModInitializer {
         HexRequiemPatternRegistry.init();
         HexRequiemAbstractionsImpl.registerHexcastingEntries();
 
-        HexAPI.instance().registerCustomBrainsweepingBehavior(EntityType.ALLAY, allay -> {
-            ReqiuemHelper.removeSoul(allay);
-            HexAPI.instance().defaultBrainsweepingBehavior().accept(allay);
-        });
-        HexAPI.instance().registerCustomBrainsweepingBehavior(EntityType.VILLAGER, allay -> {
-            ReqiuemHelper.removeSoul(allay);
-            HexAPI.instance().defaultBrainsweepingBehavior().accept(allay);
-        });
+        HexAPI.instance().registerCustomBrainsweepingBehavior(EntityType.ALLAY, ReqiuemHelper::destroySoul);
+        HexAPI.instance().registerCustomBrainsweepingBehavior(EntityType.VILLAGER, ReqiuemHelper::destroySoul);
     }
 }

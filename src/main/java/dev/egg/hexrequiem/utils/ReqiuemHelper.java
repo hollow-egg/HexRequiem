@@ -8,15 +8,13 @@ import ladysnake.requiem.common.entity.ReleasedSoulEntity;
 import ladysnake.requiem.common.entity.RequiemEntities;
 import ladysnake.requiem.common.tag.RequiemEntityTypeTags;
 import ladysnake.requiem.core.entity.SoulHolderComponent;
-import net.fabricmc.fabric.api.tag.convention.v1.ConventionalEntityTypeTags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
-import static ladysnake.requiem.api.v1.possession.PossessionComponent.getHost;
+import static ladysnake.requiem.common.remnant.RemnantTypes.REMNANT;
 
 public class ReqiuemHelper {
 
@@ -37,11 +35,13 @@ public class ReqiuemHelper {
     }
 
     public static Entity getBody(Entity entity) {
-        var host = getHost(entity);
+        var host = PossessionComponent.getHost(entity);
         return host != null ? host : entity;
     }
 
-    public static void removeSoul(LivingEntity body){
+    public static void destroySoul(LivingEntity entity) { removeSoul(entity, false); }
+
+    public static void removeSoul(LivingEntity body, boolean spawnSoul){
 
         var possessor = ((ProtoPossessable) body).getPossessor();
 
@@ -52,14 +52,16 @@ public class ReqiuemHelper {
                 LOGGER.info("Stopping Possession");
             }
         }
-        else if (body instanceof ServerPlayerEntity) {
-            RemnantComponent remnantComponent = RemnantComponent.get((PlayerEntity) body);
+        else if (body instanceof ServerPlayerEntity player) {
+            RemnantComponent remnantComponent = RemnantComponent.get(player);
+            remnantComponent.become(REMNANT);
             remnantComponent.splitPlayer(true);
             LOGGER.info("Splitting Player");
         }
         else if (!SoulHolderComponent.isSoulless(body) && !body.getType().isIn(RequiemEntityTypeTags.SOUL_CAPTURE_BLACKLIST)){
             SoulHolderComponent.get(body).removeSoul();
-            spawnReleasedSoul(body);
+            if (spawnSoul)
+                spawnReleasedSoul(body);
 
             LOGGER.info("Removed Soul");
         }

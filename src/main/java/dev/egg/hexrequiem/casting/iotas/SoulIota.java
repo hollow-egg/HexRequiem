@@ -1,8 +1,12 @@
 package dev.egg.hexrequiem.casting.iotas;
 
+import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.casting.iota.Iota;
 import at.petrak.hexcasting.api.casting.iota.IotaType;
+import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import at.petrak.hexcasting.api.utils.HexUtils;
+import at.petrak.hexcasting.client.ClientTickCounter;
+import dev.egg.hexrequiem.mixin.ColorProviderAccessor;
 import dev.egg.hexrequiem.registry.HexRequiemIotaTypes;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -12,10 +16,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+
+import static com.mojang.text2speech.Narrator.LOGGER;
 
 public class SoulIota extends Iota {
 
@@ -43,11 +50,15 @@ public class SoulIota extends Iota {
     public @NotNull NbtElement serialize() {
         var out = new NbtCompound();
         out.putUuid("uuid", this.getEntity().getUuid());
-        if (!(this.getEntity() instanceof ServerPlayerEntity)) {
+        if (!(this.getEntity() instanceof ServerPlayerEntity))
             out.putString("name", this.getEntity().getType().getName().getString());
-        }
-        else
+        else {
             out.putString("name", this.getEntity().getEntityName());
+            //save pigment
+            var provider = HexAPI.instance().getColorizer((ServerPlayerEntity) this.getEntity());
+            out.put("pigment", provider.serializeToNBT());
+        }
+
         return out;
     }
 
@@ -65,6 +76,7 @@ public class SoulIota extends Iota {
             if (entity == null || !(entity instanceof LivingEntity)) {
                 return null;
             }
+
             return new SoulIota((LivingEntity) entity);
         }
 
@@ -78,7 +90,25 @@ public class SoulIota extends Iota {
                 return Text.translatable("hexcasting.spelldata.entity.whoknows");
             }
             var name = ctag.getString("name");
-            return Text.literal(name + "'s Soul").getWithStyle(Style.EMPTY.withColor(Formatting.BLUE)).get(0);
+
+            if (!ctag.contains("pigment", NbtElement.COMPOUND_TYPE)) {
+                return Text.literal(name + " Soul").getWithStyle(Style.EMPTY.withColor(Formatting.BLUE)).get(0);
+            }
+
+            // fetch pigment
+            var pigment = FrozenPigment.fromNBT(ctag.getCompound("pigment"));
+            var colorProvider = (ColorProviderAccessor)pigment.getColorProvider();
+
+            String text = name + "'s Soul";
+            StringBuilder textFinal = new StringBuilder("<neon>");
+            int length = text.length();
+            for (int i = 0; i < length; ++i) {
+                String hexColor1 = String.format("#%06X", (0xFFFFFF & colorProvider.hexrequiem$getRawColor(600.0f/length * i, Vec3d.ZERO)));
+                String hexColor2 = String.format("#%06X", (0xFFFFFF & colorProvider.hexrequiem$getRawColor(600.0f/length * (i + 1), Vec3d.ZERO)));
+                textFinal.append("<grad from=").append(hexColor1).append(" to=").append(hexColor2).append(">").append(text.charAt(i)).append("</grad>");
+            }
+
+            return Text.literal(textFinal.toString());
         }
 
         @Override
