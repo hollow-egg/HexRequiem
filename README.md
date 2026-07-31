@@ -6,6 +6,7 @@ Ever wanted to turn your friend into a frog? Well now you can! With the power of
 Currently implemented:
 -
 - Soul Iota: contains the "true" identity of the entity (Default entity iota is now treated as if it references the "Body")
+  - The soul iota of a player has a gradient that matches their current pigment!
 - Rend Mind Spell: takes an entity iota as input and attempts to remove its soul. This removes mob ai and stops player possession
   - If you attempt to cast Rend Mind on an entity wearing a helmet (specifically armor in the head slot), the spell will fail. This is basically just an easy way for players to avoid being ripped from their bodies if they don't want to.
 <img width="234" height="235" alt="image" src="https://github.com/user-attachments/assets/24881bd9-5adb-4afe-94c1-678beb2c74f4" />
@@ -31,7 +32,6 @@ Future Plans:
   - Armor Stand base
   - Amethyst Shell
   - Player Shell
-- Add a unique color/inline identifier for each soul's name on the stack. An... aura?
 - Add string parsing for Soul Iotas
 
 UNDECIDED FEATURES
