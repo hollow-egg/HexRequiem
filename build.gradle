@@ -93,7 +93,7 @@ dependencies {
     modImplementation "at.petra-k.paucal:paucal-fabric-${minecraft_version}:${paucalVersion}"
     modImplementation "vazkii.patchouli:Patchouli:${minecraft_version}-${patchouliVersion}-FABRIC"
     modRuntimeOnly "me.shedaniel.cloth:cloth-config-fabric:${clothConfigVersion}"
-    modRuntimeOnly("com.samsthenerd.inline:inline-fabric:${inlineVersion}") { transitive = false }
+    modImplementation("com.samsthenerd.inline:inline-fabric:${inlineVersion}") { transitive = false }
     modRuntimeOnly 'me.djtheredstoner:DevAuth-fabric:1.2.1'
 
     localRuntime "io.github.llamalad7:mixinextras-fabric:${mixinExtrasVersion}"
@@ -117,6 +117,7 @@ dependencies {
     modImplementation files("libs/fabric-permissions-api-0.3.1.jar")
     modImplementation files("libs/fiber-0.23.0-2.jar")
     modImplementation files("libs/chime-cec3bcbaed508eb5f564deac8c33923dcccfdf7e.jar")
+    modImplementation files("libs/TextAnimator-1.20.1-Fabric-2.5.4.jar")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 }
 

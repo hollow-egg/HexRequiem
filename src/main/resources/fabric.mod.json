@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "HexRequiem",
   "description": "An addon for Hex Casting and Reqiuem that adds spells to manipulate possession.",
-  "authors": [],
+  "authors": ["Hollow_Egg"],
   "contact": {},
   "license": "MIT",
   "icon": "assets/hexrequiem/icon.png",
@@ -30,7 +30,6 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
-    "minecraft": "${minecraft_version}",
-    "textanimator": "*"
+    "minecraft": "${minecraft_version}"
   }
 }

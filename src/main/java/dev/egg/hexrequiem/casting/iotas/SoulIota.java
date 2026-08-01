@@ -5,7 +5,7 @@ import at.petrak.hexcasting.api.casting.iota.Iota;
 import at.petrak.hexcasting.api.casting.iota.IotaType;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import at.petrak.hexcasting.api.utils.HexUtils;
-import at.petrak.hexcasting.client.ClientTickCounter;
+import com.samsthenerd.inline.api.InlineAPI;
 import dev.egg.hexrequiem.mixin.ColorProviderAccessor;
 import dev.egg.hexrequiem.registry.HexRequiemIotaTypes;
 import net.minecraft.entity.LivingEntity;
@@ -20,9 +20,10 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.UUID;
+import com.samsthenerd.inline.api.data.ItemInlineData;
 
-import static com.mojang.text2speech.Narrator.LOGGER;
+import java.awt.*;
+import java.util.UUID;
 
 public class SoulIota extends Iota {
 
@@ -73,7 +74,7 @@ public class SoulIota extends Iota {
                 return null;
             }
             var entity = world.getEntity(uuid);
-            if (entity == null || !(entity instanceof LivingEntity)) {
+            if (!(entity instanceof LivingEntity)) {
                 return null;
             }
 
@@ -99,16 +100,22 @@ public class SoulIota extends Iota {
             var pigment = FrozenPigment.fromNBT(ctag.getCompound("pigment"));
             var colorProvider = (ColorProviderAccessor)pigment.getColorProvider();
 
-            String text = name + "'s Soul";
+            //make item inline
+            Text inlineItem = new ItemInlineData(pigment.item()).asText(false);
+            inlineItem = inlineItem.copyContentOnly().setStyle(InlineAPI.INSTANCE.withSizeModifier(inlineItem.getStyle(), 1.5));
+
+            //create gradient
+            String text = name + "'s Soul: ";
             StringBuilder textFinal = new StringBuilder("<neon>");
-            int length = text.length();
+
+            int length = text.length() - 1;
             for (int i = 0; i < length; ++i) {
                 String hexColor1 = String.format("#%06X", (0xFFFFFF & colorProvider.hexrequiem$getRawColor(600.0f/length * i, Vec3d.ZERO)));
                 String hexColor2 = String.format("#%06X", (0xFFFFFF & colorProvider.hexrequiem$getRawColor(600.0f/length * (i + 1), Vec3d.ZERO)));
                 textFinal.append("<grad from=").append(hexColor1).append(" to=").append(hexColor2).append(">").append(text.charAt(i)).append("</grad>");
             }
 
-            return Text.literal(textFinal.toString());
+            return Text.literal(textFinal.toString()).append(inlineItem);
         }
 
         @Override
