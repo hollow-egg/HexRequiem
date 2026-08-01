@@ -1,3 +1,8 @@
+<h1 align="center"><img width="160" height="160" alt="hexrequiem" src="https://github.com/user-attachments/assets/04c726ce-6c4d-47bf-9bfe-8db9a7f30142" />
+
+  HexRequiem<br>
+</h1>
+
 Ever wanted to turn your friend into a frog? Well now you can! With the power of hexcasting you can now tear out both their souls and slap your friend's mind into the frog's empty body. And there's so much more...
 
 <img width="800" height="450" alt="2026-07-2701-04-21-ezgif com-video-to-gif-converter" src="https://github.com/user-attachments/assets/624c4113-b529-406f-894a-26e284dfc710" />
@@ -6,7 +11,12 @@ Ever wanted to turn your friend into a frog? Well now you can! With the power of
 Currently implemented:
 -
 - Soul Iota: contains the "true" identity of the entity (Default entity iota is now treated as if it references the "Body")
-- Rend Mind Spell: takes an entity iota as input and attempts to remove its soul. This removes mob ai and stops player possession
+  - The soul iota of a player has a gradient that matches their current pigment!
+    
+    <img width="377.5" height="256.5" alt="image" src="https://github.com/user-attachments/assets/6a66eedb-b7a5-4e79-9c95-63d69ec9762d" />
+
+
+- Rend Mind Spell: takes an entity iota as input and attempts to remove its soul. This removes mob ai, stops any player possession, and releases a wandering spirit
   - If you attempt to cast Rend Mind on an entity wearing a helmet (specifically armor in the head slot), the spell will fail. This is basically just an easy way for players to avoid being ripped from their bodies if they don't want to.
 <img width="234" height="235" alt="image" src="https://github.com/user-attachments/assets/24881bd9-5adb-4afe-94c1-678beb2c74f4" />
 
@@ -31,7 +41,6 @@ Future Plans:
   - Armor Stand base
   - Amethyst Shell
   - Player Shell
-- Add a unique color/inline identifier for each soul's name on the stack. An... aura?
 - Add string parsing for Soul Iotas
 
 UNDECIDED FEATURES
