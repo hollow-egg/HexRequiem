@@ -7,7 +7,9 @@ Currently implemented:
 -
 - Soul Iota: contains the "true" identity of the entity (Default entity iota is now treated as if it references the "Body")
   - The soul iota of a player has a gradient that matches their current pigment!
-    <img width="456.5" height="267" alt="image" src="https://github.com/user-attachments/assets/49d8b54d-627d-416e-aac6-4969e3b0ee0f" />
+    
+    <img width="377.5" height="256.5" alt="image" src="https://github.com/user-attachments/assets/6a66eedb-b7a5-4e79-9c95-63d69ec9762d" />
+
 
 - Rend Mind Spell: takes an entity iota as input and attempts to remove its soul. This removes mob ai, stops any player possession, and releases a wandering spirit
   - If you attempt to cast Rend Mind on an entity wearing a helmet (specifically armor in the head slot), the spell will fail. This is basically just an easy way for players to avoid being ripped from their bodies if they don't want to.
