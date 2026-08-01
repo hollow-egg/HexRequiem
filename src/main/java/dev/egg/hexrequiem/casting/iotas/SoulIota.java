@@ -108,7 +108,7 @@ public class SoulIota extends Iota {
             String text = name + "'s Soul: ";
             StringBuilder textFinal = new StringBuilder("<neon>");
 
-            int length = text.length() - 1;
+            int length = text.length();
             for (int i = 0; i < length; ++i) {
                 String hexColor1 = String.format("#%06X", (0xFFFFFF & colorProvider.hexrequiem$getRawColor(600.0f/length * i, Vec3d.ZERO)));
                 String hexColor2 = String.format("#%06X", (0xFFFFFF & colorProvider.hexrequiem$getRawColor(600.0f/length * (i + 1), Vec3d.ZERO)));
