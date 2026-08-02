@@ -4,18 +4,13 @@ import at.petrak.hexcasting.api.casting.ParticleSpray
 import at.petrak.hexcasting.api.casting.RenderedSpell
 import at.petrak.hexcasting.api.casting.castables.SpellAction
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment
-import at.petrak.hexcasting.api.casting.iota.EntityIota
+import at.petrak.hexcasting.api.casting.getEntity
 import at.petrak.hexcasting.api.casting.iota.Iota
+import at.petrak.hexcasting.api.casting.mishaps.MishapImmuneEntity
 import at.petrak.hexcasting.api.misc.MediaConstants
-import baritone.api.fakeplayer.FakeServerPlayerEntity
-import dev.egg.hexrequiem.casting.iotas.SoulIota
+import dev.egg.hexrequiem.casting.getSoul
 import dev.egg.hexrequiem.utils.ReqiuemHelper
-import ladysnake.requiem.api.v1.possession.PossessionComponent
-import ladysnake.requiem.api.v1.remnant.RemnantComponent
-import ladysnake.requiem.common.entity.PlayerShellEntity
-import net.minecraft.entity.Entity
 import net.minecraft.entity.LivingEntity
-import net.minecraft.entity.mob.MobEntity
 import net.minecraft.server.network.ServerPlayerEntity
 
 
@@ -24,42 +19,30 @@ object OpConjoinSpirit : SpellAction
     override val argc = 2
     val cost = MediaConstants.SHARD_UNIT
 
-    private fun canPossess(entity: Entity): Boolean {
-        if (entity !is LivingEntity // if body is not a valid target
-            || ReqiuemHelper.getSoul(entity) != null) // if body already has a soul
-            return false
-        return true
-    }
-
     override fun execute(args: List<Iota>, env: CastingEnvironment): SpellAction.Result {
-        val soulArg = args[0] as? SoulIota?: return SpellAction.Result(Spell(null, null), 0L, emptyList())
-        val entityArg = args[1] as? EntityIota?: return SpellAction.Result(Spell(null, null), 0L, emptyList())
+        val soul = args.getSoul(0, argc)
+        val entity = args.getEntity(1, argc)
 
-        env.assertEntityInRange(entityArg.entity)
+        //very intentionally not checking for soul's position. Allows for a sort of "teleportation" if you leave a body to possess somewhere
+        env.assertEntityInRange(entity)
 
         // only supporting transferring player souls atm, planning on transferring mob souls later
-        if (soulArg.entity !is ServerPlayerEntity || !canPossess(entityArg.entity))
-            return SpellAction.Result(Spell(
-                null,
-                null,
-            ), 0L, emptyList())
+        if (soul !is ServerPlayerEntity)
+            throw MishapImmuneEntity(soul)
+
+        if (!ReqiuemHelper.canPossess(entity))
+            throw MishapImmuneEntity(entity)
 
         return SpellAction.Result(
-            Spell(soulArg.entity as ServerPlayerEntity, entityArg.entity as LivingEntity),
+            Spell(soul, entity as LivingEntity),
             cost,
-            listOf(ParticleSpray.burst(entityArg.entity.pos, 1.0))
+            listOf(ParticleSpray.burst(entity.pos, 1.0))
         )
     }
 
-    private data class Spell(val soul: ServerPlayerEntity?, val body: LivingEntity?) : RenderedSpell {
+    private data class Spell(val soul: LivingEntity?, val body: LivingEntity?) : RenderedSpell {
         override fun cast(env: CastingEnvironment) {
-            soul ?: return
-            body ?: return
-            val success: Boolean
-            if (body is MobEntity)
-                success = PossessionComponent.get(soul).startPossessing(body)
-            else if (body is FakeServerPlayerEntity)
-                success = RemnantComponent.get(soul).merge(body);
+            ReqiuemHelper.placeSoulInBody(soul, body)
         }
     }
 }

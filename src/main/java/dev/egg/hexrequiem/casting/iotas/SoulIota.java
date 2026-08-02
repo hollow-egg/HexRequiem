@@ -3,6 +3,7 @@ package dev.egg.hexrequiem.casting.iotas;
 import at.petrak.hexcasting.api.HexAPI;
 import at.petrak.hexcasting.api.casting.iota.Iota;
 import at.petrak.hexcasting.api.casting.iota.IotaType;
+import at.petrak.hexcasting.api.pigment.ColorProvider;
 import at.petrak.hexcasting.api.pigment.FrozenPigment;
 import at.petrak.hexcasting.api.utils.HexUtils;
 import com.samsthenerd.inline.api.InlineAPI;
@@ -13,9 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,16 +50,55 @@ public class SoulIota extends Iota {
     public @NotNull NbtElement serialize() {
         var out = new NbtCompound();
         out.putUuid("uuid", this.getEntity().getUuid());
-        if (!(this.getEntity() instanceof ServerPlayerEntity))
-            out.putString("name", this.getEntity().getType().getName().getString());
-        else {
-            out.putString("name", this.getEntity().getEntityName());
-            //save pigment
-            var provider = HexAPI.instance().getColorizer((ServerPlayerEntity) this.getEntity());
-            out.put("pigment", provider.serializeToNBT());
-        }
+        out.putString("name", Text.Serializer.toJson(getSoulNameWithInline(true)));
 
         return out;
+    }
+
+    @Override
+    public Text display() {
+        return getSoulNameWithInline(false);
+    }
+
+    private Text getSoulNameWithInline(boolean fearSerializer){
+        String name;
+
+        Text inlineItem;
+        ColorProvider provider;
+        if(this.getEntity() instanceof ServerPlayerEntity player){
+            name = player.getEntityName() + "'s Soul: ";
+            var pigment = HexAPI.instance().getColorizer((ServerPlayerEntity) this.getEntity());
+            provider = pigment.getColorProvider();
+            inlineItem = new ItemInlineData(pigment.item()).asText(!fearSerializer);
+        }
+        else {
+            Text customName = getEntity().getCustomName();
+            if (customName != null)
+                name = customName.getString() +  "'s Soul: ";
+            else
+                name = getEntity().getType().getName().getString() + " Soul: ";
+            provider = FrozenPigment.DEFAULT.get().getColorProvider();
+            inlineItem = new ItemInlineData(FrozenPigment.DEFAULT.get().item()).asText(!fearSerializer);
+        }
+
+        inlineItem = inlineItem.copyContentOnly().setStyle(InlineAPI.INSTANCE.withSizeModifier(inlineItem.getStyle(), 1.5));
+        //any other entity
+        return getStringWithPigmentGradient(name, provider).copy().append(inlineItem);
+    }
+
+    private static Text getStringWithPigmentGradient(String text, ColorProvider colorProvider){
+        ColorProviderAccessor provider = (ColorProviderAccessor) colorProvider;
+
+        //very hacky solution to displaying the character colors, but it works! need to find a way to get rid of the nasty 600 magic number tho...
+        StringBuilder textFinal = new StringBuilder("<neon>");
+        int length = text.length();
+        for (int i = 0; i < length; ++i) {
+            String hexColor1 = String.format("#%06X", (0xFFFFFF & provider.hexrequiem$getRawColor(600.0f/length * i, Vec3d.ZERO)));
+            String hexColor2 = String.format("#%06X", (0xFFFFFF & provider.hexrequiem$getRawColor(600.0f/length * (i + 1), Vec3d.ZERO)));
+            textFinal.append("<grad from=").append(hexColor1).append(" to=").append(hexColor2).append(">").append(text.charAt(i)).append("</grad>");
+        }
+
+        return Text.literal(textFinal.toString());
     }
 
     public static IotaType<SoulIota> TYPE = new IotaType<>() {
@@ -90,32 +128,9 @@ public class SoulIota extends Iota {
             if (!ctag.contains("name", NbtElement.STRING_TYPE)) {
                 return Text.translatable("hexcasting.spelldata.entity.whoknows");
             }
-            var name = ctag.getString("name");
+            var nameJson = ctag.getString("name");
 
-            if (!ctag.contains("pigment", NbtElement.COMPOUND_TYPE)) {
-                return Text.literal(name + " Soul").getWithStyle(Style.EMPTY.withColor(Formatting.BLUE)).get(0);
-            }
-
-            // fetch pigment
-            var pigment = FrozenPigment.fromNBT(ctag.getCompound("pigment"));
-            var colorProvider = (ColorProviderAccessor)pigment.getColorProvider();
-
-            //make item inline
-            Text inlineItem = new ItemInlineData(pigment.item()).asText(false);
-            inlineItem = inlineItem.copyContentOnly().setStyle(InlineAPI.INSTANCE.withSizeModifier(inlineItem.getStyle(), 1.5));
-
-            //create gradient
-            String text = name + "'s Soul: ";
-            StringBuilder textFinal = new StringBuilder("<neon>");
-
-            int length = text.length();
-            for (int i = 0; i < length; ++i) {
-                String hexColor1 = String.format("#%06X", (0xFFFFFF & colorProvider.hexrequiem$getRawColor(600.0f/length * i, Vec3d.ZERO)));
-                String hexColor2 = String.format("#%06X", (0xFFFFFF & colorProvider.hexrequiem$getRawColor(600.0f/length * (i + 1), Vec3d.ZERO)));
-                textFinal.append("<grad from=").append(hexColor1).append(" to=").append(hexColor2).append(">").append(text.charAt(i)).append("</grad>");
-            }
-
-            return Text.literal(textFinal.toString()).append(inlineItem);
+            return Text.Serializer.fromLenientJson(nameJson);
         }
 
         @Override

@@ -6,7 +6,7 @@ import at.petrak.hexcasting.api.casting.castables.ConstMediaAction
 import at.petrak.hexcasting.api.casting.eval.CastingEnvironment
 import at.petrak.hexcasting.api.casting.iota.Iota
 import dev.egg.hexrequiem.api.SoulInterface
-import dev.egg.hexrequiem.casting.iotas.SoulIota
+import dev.egg.hexrequiem.casting.getSoul
 import dev.egg.hexrequiem.utils.ReqiuemHelper
 
 object OpSoulEntity : ConstMediaAction {
@@ -14,10 +14,9 @@ object OpSoulEntity : ConstMediaAction {
     override val argc = 1
 
     override fun execute(args: List<Iota>, env: CastingEnvironment): List<Iota> {
-        val soul = args[0] as SoulIota
-        val e = soul.entity
+        val soul = args.getSoul(0, argc)
 
-        val entity = ReqiuemHelper.getBody(e) ?: return null.asActionResult
+        val entity = ReqiuemHelper.getBody(soul) ?: return null.asActionResult
 
         env.assertEntityInRange(entity)
         return SoulInterface(entity).asActionResult

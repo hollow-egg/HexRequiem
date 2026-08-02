@@ -6,7 +6,6 @@ import dev.egg.hexrequiem.registry.HexRequiemPatternRegistry;
 import dev.egg.hexrequiem.utils.ReqiuemHelper;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
 
 public class HexRequiem implements ModInitializer {
     @Override
