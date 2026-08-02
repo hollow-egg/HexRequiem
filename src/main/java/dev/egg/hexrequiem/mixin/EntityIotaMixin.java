@@ -33,6 +33,6 @@ public class EntityIotaMixin {
     //this fixes entity rendering in iotas when playing on a server
     @Redirect(method = "display", at = @At(value = "INVOKE", target = "Lnet/minecraft/text/Text;copy()Lnet/minecraft/text/MutableText;"))
     private static MutableText hexrequiem$copy(Text instance){
-        return instance.copyContentOnly();
+        return Text.literal(instance.getString());
     }
 }
