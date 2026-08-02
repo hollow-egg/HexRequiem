@@ -6,13 +6,9 @@ import dev.egg.hexrequiem.utils.ReqiuemHelper;
 import ladysnake.requiem.common.entity.PlayerShellEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 
 @Mixin(EntityIota.class)
 public class EntityIotaMixin {
@@ -30,9 +26,12 @@ public class EntityIotaMixin {
         return playerEntity.getGameProfile();
     }
 
-    //this fixes entity rendering in iotas when playing on a server
-    @Redirect(method = "display", at = @At(value = "INVOKE", target = "Lnet/minecraft/text/Text;copy()Lnet/minecraft/text/MutableText;"))
-    private static MutableText hexrequiem$copy(Text instance){
-        return Text.literal(instance.getString());
+    //fixes display of entity iotas on servers (for some reason). This is probably a bug with inline
+    //tricks the game into trying to render a horse, failing, then making the spacer character less invisible
+    //this attempt probably caches the entity renderers somehow, but im not 100% sure why this works tbh
+    //if someone else can find the error in inline please tell me!!!
+    @ModifyConstant(method = "getEntityNameWithInline", constant = @Constant(stringValue = ": "))
+    private static @NotNull String hexrequiem$getEntityNameWithInline(@NotNull String string) {
+        return ":<shadow a=0>§8[entity:horse]</shadow>";
     }
 }

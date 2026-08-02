@@ -33,11 +33,12 @@ public class ReqiuemHelper {
     }
 
     public static Entity getSoul(Entity entity) {
-        ProtoPossessable possessable = (ProtoPossessable) entity;
 
-        if (entity instanceof FakeServerPlayerEntity)
+        if (entity instanceof FakeServerPlayerEntity
+            || !(entity instanceof MobEntity || entity instanceof PlayerEntity))
             return null;
 
+        ProtoPossessable possessable = (ProtoPossessable) entity;
         if (possessable.isBeingPossessed())
             return possessable.getPossessor();
         else if (entity instanceof ServerPlayerEntity)
