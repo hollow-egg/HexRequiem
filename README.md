@@ -41,7 +41,6 @@ Future Plans:
   - Armor Stand base
   - Amethyst Shell
   - Player Shell
-- Add string parsing for Soul Iotas
 
 UNDECIDED FEATURES
 -
